@@ -262,15 +262,7 @@ def __parse_server_response_data(server_response_data, info_type):
 
 
 def __reformat(items, info_type, result_format):
-    if result_format == 'json':
-        return json.dumps(
-            {info_type: items},
-            sort_keys=True,
-            indent=2,
-            separators=(',', ': '))
-    # default to XML output (until we have a plain formatter)
-    else:
-        # elif result_format == 'xml':
+    if result_format == 'xml':
         root = etree.Element(info_type)
         for item in items:
             etree.SubElement(root, __inflect(info_type), item)
@@ -279,6 +271,13 @@ def __reformat(items, info_type, result_format):
             xml_declaration=True,
             encoding='UTF-8',
             pretty_print=True).decode()
+    # default to JSON output (until we have a plain formatter)
+    else:
+        return json.dumps(
+            {info_type: items},
+            sort_keys=True,
+            indent=2,
+            separators=(',', ': '))
 
 
 def __warn(str, out=sys.stdout):
