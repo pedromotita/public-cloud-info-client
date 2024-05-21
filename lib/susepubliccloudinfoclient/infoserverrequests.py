@@ -146,6 +146,7 @@ def __form_url(
         region='all',
         image_state=None,
         server_type=None,
+        category=None,
         apply_filters=None):
     """Form the URL for the request"""
     url_components = []
@@ -161,12 +162,15 @@ def __form_url(
         url_components.append('images/states')
     elif info_type == 'types':
         url_components.append('servers/types')
+    elif info_type == 'version':
+        url_components.append('dataversion?category=%s' % category)
     else:
         url_components.append(info_type)
     doc_type = image_state or server_type
     if doc_type:
         url_components.append(doc_type)
-    url_components[-1] = url_components[-1] + '.json'
+    if info_type != 'version':
+        url_components[-1] = url_components[-1] + '.json'
     url = '/'
     return url.join(url_components)
 
@@ -411,6 +415,25 @@ def get_server_data(
         result_format,
         region,
         server_type=server_type,
+        apply_filters=command_arg_filter
+    )
+    return __process(url, info_type, command_arg_filter, result_format)
+
+
+def get_dataversion_data(
+        framework,
+        info_type,
+        category,
+        result_format='plain',
+        region='all',
+        command_arg_filter=None):
+    """Return the requested dataversion information"""
+    url = __form_url(
+        framework,
+        info_type,
+        result_format,
+        region,
+        category=category,
         apply_filters=command_arg_filter
     )
     return __process(url, info_type, command_arg_filter, result_format)
